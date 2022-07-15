@@ -2,12 +2,10 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/gin-gonic/gin"
+    "dep/API_REST_Golang/configs"
+
 )
-const dbName = "personsdb"
-const collectionName = "person"
-const port = 8000
 
 type friend struct{
     Id          int        `json:"id"`
@@ -59,7 +57,15 @@ func getUser(c *gin.Context) {
 func main() {
     // fmt.Println("Hello, World!")
     // fmt.Println(users)
+    // init gin instance
     router := gin.Default()
+
+    // connect to Databbase
+    configs.ConnectDB()
+
+    // set routes
+
+    // run server
     router.GET("/user", getUser)
           router.GET("/", func(c *gin.Context) {
                 c.JSON(200, gin.H{
