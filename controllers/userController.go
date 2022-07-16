@@ -1,29 +1,37 @@
+package controller
+
+import (
+	// "net/http"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
 
 // * POST /add/users
 func CreateUser (c *gin.Context) {
-  c.JSON(http.StatusCreated, response)
+	fmt.Print("CreateUser Fonction\n")
 }
 // * POST /login
 func Login (c *gin.Context) {
-  c.JSON(http.StatusCreated, response)
+	fmt.Print("Login Fonction\n")
 }
 
 // * DELETE /delete/user/:id
 func DeleteUser (c *gin.Context) {
-  c.JSON(http.StatusCreated, response)
+	fmt.Print("DeleteUser Fonction\n")
 }
 
 // * GET /user/:id
-func getAUser (c *gin.Context) {
-  c.JSON(http.StatusCreated, response)
+func GetAUser (c *gin.Context) {
+	fmt.Print("GetAUser Fonction\n")
 }
 
 // * GET /users/list
-func getUserList (c *gin.Context) {
-  c.JSON(http.StatusCreated, response)
+func GetUserList (c *gin.Context) {
+	fmt.Print("GetUserList Fonction\n")
 }
 
 // * UPDATE /user/:id
 func UpdateAUser (c *gin.Context) {
-  c.JSON(http.StatusCreated, response)
+	fmt.Print("UpdateAUser Fonction\n")
 }
