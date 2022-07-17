@@ -35,15 +35,13 @@ func importDataSet() []models.User {
 // * POST /add/users
 func CreateUser (c *gin.Context) {
 	fmt.Print("CreateUser Function\n")
-	jsonData, err := 		c.Request.GetBody()
-	fmt.Println(jsonData)
-
+	jsonData, err := ioutil.ReadAll(c.Request.Body)
 if err != nil {
         log.Fatal("Error during Unmarshal(): ", err)
 }
 // err = client.Set("id", jsonData, 0).Err()
 	var DataSet []models.User
-    // err = json.Unmarshal(jsonData, &DataSet)
+    err = json.Unmarshal(jsonData, &DataSet)
     if err != nil {
         log.Fatal("Error during Unmarshal(): ", err)
     }
