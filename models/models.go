@@ -5,7 +5,7 @@ type Friend struct{
 }
 type User struct {
     // _id         string        `json:"_id,omitempty"`
-    Id          string        `json:"id"`
+    ID          string        `json:"id"`
     Password    string        `json:"password"`
     IsActive    bool          `json:"isActive"`
     Balance     string        `json:"balance"`

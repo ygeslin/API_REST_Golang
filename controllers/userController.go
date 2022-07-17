@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+
 	// "github.com/gin-gonic/gin/binding"
 
 	"dep/API_REST_Golang/configs"
@@ -35,22 +37,28 @@ func importDataSet() []models.User {
 // * POST /add/users
 func CreateUser (c *gin.Context) {
 	fmt.Print("CreateUser Function\n")
+	// Read the raw data of the body
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
-if err != nil {
-        log.Fatal("Error during Unmarshal(): ", err)
-}
-// err = client.Set("id", jsonData, 0).Err()
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+
+	// Deserialize the json Data
 	var DataSet []models.User
-    err = json.Unmarshal(jsonData, &DataSet)
-    if err != nil {
-        log.Fatal("Error during Unmarshal(): ", err)
-    }
-	// c.BindJSON(&DataSet)
-	fmt.Println(DataSet)
+	err = json.Unmarshal(jsonData, &DataSet)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+	// fmt.Println(DataSet)
 
 	collection := configs.GetCollection(configs.DB, "users")
 
 	for _, item := range DataSet {
+		// test := collection.FindOne( c, item.Email)
+		test2, err:= collection.Find( c, bson.M{"id": item.ID})
+		// fmt.Println(test)
+		fmt.Println(test2)
+
 		res, err := collection.InsertOne(context.Background(), item)
 		if err != nil {
 			return
