@@ -3,6 +3,7 @@ package main
 import (
 	// "net/http"
 	"dep/API_REST_Golang/configs"
+	"dep/API_REST_Golang/models"
 	"dep/API_REST_Golang/routes"
 	"encoding/json"
 	"fmt"
@@ -12,43 +13,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type friend struct{
-    Id          int        `json:"id"`
-    Name        string     `json:"name"`
-}
-type user struct {
-    Id          string     `json:"id"`
-    Password    string     `json:"password"`
-    IsActive    bool       `json:"isActive"`
-    Balance     string     `json:"balance"`
-    Age         int        `json:"age"`
-    Name        string     `json:"name"`
-    Gender      string     `json:"gender"`
-    Company     string     `json:"company"`
-    Email       string     `json:"email"`
-    Phone       string     `json:"phone"`
-    Address     string     `json:"address"`
-    About       string     `json:"about"`
-    Registered  string     `json:"registered"`
-    Latitude    float32    `json:"Latitude"`
-    Longitude   float32    `json:"Longitude"`
-    Tags        []string   `json:"tags"`
-    Friends     []friend   `json:"friends"`
-    Data        string     `json:"data"`
-}
-
 func getUser(c *gin.Context) {
     //    c.IndentedJSON(http.StatusOK)
 }
 
-func importDataSet() []user {
+func importDataSet() []models.User {
     content, err := ioutil.ReadFile("./data/DataSet.json")
     if err != nil {
         log.Fatal("Error when opening file: ", err)
     }
 
     // Now let's unmarshall the data into `payload`
-    var payload []user
+    var payload []models.User
     err = json.Unmarshal(content, &payload)
     if err != nil {
         log.Fatal("Error during Unmarshal(): ", err)
@@ -62,6 +38,7 @@ func importDataSet() []user {
 func main() {
     // fmt.Println("Hello, World!")
     // fmt.Println(users)
+    // convert json data set into struct
     DataSet := importDataSet();
     fmt.Println(DataSet)
     // init gin instance
