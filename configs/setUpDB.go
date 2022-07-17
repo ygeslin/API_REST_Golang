@@ -56,5 +56,5 @@ func ConnectDB() *mongo.Client {
 var DB *mongo.Client = ConnectDB()
 
 func GetCollection(client *mongo.Client, collection string) *mongo.Collection {
-	return client.Database("contoh").Collection(collection)
+	return client.Database("usersCollection").Collection(collection)
 }

@@ -1,5 +1,9 @@
 #!/bin/zsh
 
+#Inital post that fill the database with data set
+echo 'Inital post that fill the database with data set'
+curl -X POST  -d “@data/DataSet.json” http://localhost:8080/add/users
+
 echo ' curl -X POST http://localhost:8080/add/users' "\n"
 curl -X POST http://localhost:8080/add/users
 
