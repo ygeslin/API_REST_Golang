@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 
@@ -37,13 +38,8 @@ import (
 //     return payload
 // }
 
-// * POST /add/users
-// TODO Add thread for each user creation
-//// check if the user exist in db before create DONE
-func CreateUser (c *gin.Context) {
-	fmt.Print("CreateUser Function\n")
-	// Read the raw data of the body
-	jsonData, err := ioutil.ReadAll(c.Request.Body)
+func extractJsonRequestBody (body io.ReadCloser) []models.User {
+	jsonData, err := ioutil.ReadAll(body)
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
 	}
@@ -54,7 +50,16 @@ func CreateUser (c *gin.Context) {
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
 	}
+	return DataSet
+}
 
+// * POST /add/users
+// TODO Add thread for each user creation
+//// check if the user exist in db before create DONE
+func CreateUser (c *gin.Context) {
+	fmt.Print("CreateUser Function\n")
+	// Read the raw data of the body
+	DataSet := extractJsonRequestBody(c.Request.Body)
 
 	for _, item := range DataSet {
 		// query is the filter
@@ -114,7 +119,7 @@ func GetAUser (c *gin.Context) {
 		var user models.User
 		err := collection.FindOne(c, bson.M{"id": userId}).Decode(&user)
 		if err != nil {
-			c.JSON(http.StatusNoContent, "Sorry, user not found")
+			c.JSON(http.StatusNoContent, gin.H{"message": "Sorry, user not found"})
 			return
 		}
 		c.JSON(http.StatusOK, user)
@@ -143,4 +148,12 @@ func GetUserList (c *gin.Context) {
 // * UPDATE /user/:id
 func UpdateAUser (c *gin.Context) {
 	fmt.Print("UpdateAUser Function\n")
+	userId := c.Param("id")
+	var user models.User
+	err := collection.FindOne(c, bson.M{"id": userId}).Decode(&user)
+	if err != nil {
+		c.JSON(http.StatusNoContent, "Sorry, user not found")
+		return
+	}
+	// res, err:= collection.UpdateOne(c, bson.M{"id": userId}, user)
 }
