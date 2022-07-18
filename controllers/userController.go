@@ -38,7 +38,8 @@ import (
 //     return payload
 // }
 
-// TODO refactor the function to be more flexible, to handle both type (user and []user) in the same function
+// TODO refactor the function to be more flexible, to handle both type (user and []user) in the same function (Maybe with typeof and if)
+// TODO Add a validator for the data
 func extractJsonArrayRequestBody (body io.ReadCloser) []models.User {
 	// Read the raw data of the body
 	jsonData, err := ioutil.ReadAll(body)
@@ -72,15 +73,25 @@ func extractJsonRequestBody (body io.ReadCloser) models.User {
 
 func createUserFile(fileName, data string) {
 		filepath := "./userFiles/" + fileName
+		// create or truncate the file
 		f, err := os.Create(filepath)
 		if err != nil {
 			fmt.Println(err)
 		}
 		// close the file with defer
 		defer f.Close()
+		// write into the file
 		f.WriteString(data);
 		fmt.Println("Data file of the user was successfully created")
 
+}
+
+func deleteUserFile(fileName string) {
+		filepath := "./userFiles/" + fileName
+	err := os.Remove(filepath)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 // * POST /add/users
@@ -106,9 +117,7 @@ func CreateUser (c *gin.Context) {
 		if err != nil {
 			return
 		}
-		if res.InsertedID != nil{
-		fmt.Println("The user with ID:'", item.ID, "' was successfully added")
-		}
+		fmt.Printf("InsertOne document with _id: %v \n", res.InsertedID)
 		 // create the file
 		createUserFile(item.ID, item.Data);
 
@@ -117,14 +126,12 @@ func CreateUser (c *gin.Context) {
 		fmt.Println("The user with ID:'", user.ID, "' is already register in the Database")
 		}
 	}
-
-	// response, _ := json.Marshal(res)
-	// c.Send(response)
-	// fmt.Println(collection)
-
+	// return with json
 }
 // * POST /login
 // TODO Add jwt Auth
+// TODO Add refresh token
+// TODO automate test with curl
 func Login (c *gin.Context) {
 	fmt.Print("Login Function\n")
 }
@@ -132,6 +139,19 @@ func Login (c *gin.Context) {
 // * DELETE /delete/user/:id
 func DeleteUser (c *gin.Context) {
 	fmt.Print("DeleteUser Function\n")
+	userId := c.Param("id")
+	var user models.User
+	err := collection.FindOne(c, bson.M{"id": userId}).Decode(&user)
+	if err != nil {
+		c.JSON(http.StatusNoContent, "Sorry, user not found")
+		return
+	}
+	res, err := collection.DeleteOne(c, bson.M{"id": userId})
+	if err != nil {
+    log.Fatal(err)
+	}
+	fmt.Printf("DeleteOne removed %v document(s)\n", res.DeletedCount)
+	deleteUserFile(userId)
 }
 
 // * GET /user/:id
@@ -191,5 +211,5 @@ func UpdateAUser (c *gin.Context) {
 	if err != nil {
     log.Fatal(err)
 	}
-	fmt.Print("Update: ", res)
+	fmt.Printf("Update %v document(s)\n", res.ModifiedCount)
 }

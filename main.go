@@ -8,6 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO implements tests in Go instead of bash with kind of asserts like in Python
+// TODO replace MongoDB Atlas by standalone db
+// TODO dockerize app and db with docker compose
 func main() {
 	router := gin.Default()
 
@@ -18,11 +21,5 @@ func main() {
 	routes.SetRoutes(router)
 
 	// run server
-	// router.GET("/user", getUser)
-	//       router.GET("/", func(c *gin.Context) {
-	//             c.JSON(200, gin.H{
-	//                     "data": "Hello from Gin-gonic & mongoDB",
-	//             })
-	//     })
 	router.Run("localhost:8080")
 }
