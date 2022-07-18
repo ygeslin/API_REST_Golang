@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -73,6 +74,17 @@ func CreateUser (c *gin.Context) {
 		if res.InsertedID != nil{
 		fmt.Println("The user with ID:'", item.ID, "' was successfully added")
 		}
+		 // create the file
+		 filepath := "./userFiles/" + item.ID
+		f, err := os.Create(filepath)
+		if err != nil {
+			fmt.Println(err)
+		}
+		// close the file with defer
+		defer f.Close()
+		f.WriteString(item.Data);
+		fmt.Println("Data file of the user was successfully created")
+
 		// if User is already in the DB, just print info and don't add it
 		} else {
 		fmt.Println("The user with ID:'", user.ID, "' is already register in the Database")
