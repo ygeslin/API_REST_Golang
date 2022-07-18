@@ -9,8 +9,10 @@ import (
 )
 
 // TODO implements tests in Go instead of bash with kind of asserts like in Python
+// TODO add IP and port in the .env file for flexibility
 // TODO replace MongoDB Atlas by standalone db
 // TODO dockerize app and db with docker compose
+// TODO https with nginx
 func main() {
 	router := gin.Default()
 

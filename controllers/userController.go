@@ -19,6 +19,8 @@ import (
 	"log"
 )
 
+// TODO Add middleware in all controllers or in the router ?
+
 	var collection = configs.GetCollection(configs.DB, "users")
 // func importDataSet() []models.User {
 //     content, err := ioutil.ReadFile("./data/DataSet.json")
@@ -130,8 +132,10 @@ func CreateUser (c *gin.Context) {
 }
 // * POST /login
 // TODO Add jwt Auth
+// TODO limit the size and complexity of username and password (use regex)
 // TODO Add refresh token
 // TODO automate test with curl
+// TODO add pepper to protect against rainbow table
 func Login (c *gin.Context) {
 	fmt.Print("Login Function\n")
 }
