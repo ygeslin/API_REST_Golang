@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ import (
 	"log"
 )
 
+	var collection = configs.GetCollection(configs.DB, "users")
 // func importDataSet() []models.User {
 //     content, err := ioutil.ReadFile("./data/DataSet.json")
 //     if err != nil {
@@ -52,9 +54,7 @@ func CreateUser (c *gin.Context) {
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
 	}
-	// fmt.Println(DataSet)
 
-	collection := configs.GetCollection(configs.DB, "users")
 
 	for _, item := range DataSet {
 		// query is the filter
@@ -109,13 +109,35 @@ func DeleteUser (c *gin.Context) {
 
 // * GET /user/:id
 func GetAUser (c *gin.Context) {
-	fmt.Print("GetAUser Function\n")
-	// collection := configs.GetCollection(configs.DB, "users")
+		fmt.Print("GetAUser Function\n")
+		userId := c.Param("id")
+		var user models.User
+		err := collection.FindOne(c, bson.M{"id": userId}).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusNoContent, "Sorry, user not found")
+			return
+		}
+		c.JSON(http.StatusOK, user)
 }
 
 // * GET /users/list
 func GetUserList (c *gin.Context) {
 	fmt.Print("GetUserList Function\n")
+		var userList []models.User
+		res, err := collection.Find(c, bson.M{})
+		if err != nil {
+			c.JSON(http.StatusNoContent, "Sorry, no user in DataBase")
+			return
+		}
+		for res.Next(c) {
+			var singleUser models.User
+			if err = res.Decode(&singleUser); err != nil {
+				c.JSON(http.StatusInternalServerError,"Error while Decoding bson file from DataBase" )
+			}
+
+			userList = append(userList, singleUser)
+		}
+		c.JSON(http.StatusOK, userList)
 }
 
 // * UPDATE /user/:id
