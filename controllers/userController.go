@@ -39,6 +39,7 @@ import (
 // }
 
 func extractJsonRequestBody (body io.ReadCloser) []models.User {
+	// Read the raw data of the body
 	jsonData, err := ioutil.ReadAll(body)
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
@@ -58,7 +59,6 @@ func extractJsonRequestBody (body io.ReadCloser) []models.User {
 //// check if the user exist in db before create DONE
 func CreateUser (c *gin.Context) {
 	fmt.Print("CreateUser Function\n")
-	// Read the raw data of the body
 	DataSet := extractJsonRequestBody(c.Request.Body)
 
 	for _, item := range DataSet {
