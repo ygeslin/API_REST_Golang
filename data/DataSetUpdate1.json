@@ -1,0 +1,37 @@
+  {
+    "id": "1qS9OI4YX8daKvHpwvhrUt6PVnG6MLQMemeFirBdqzEjwibcE1y1EZJELvXWi6w7hU9GwHMQ0RgVc3uWEOEJBbwolVD7rqIUgcwN",
+    "password":"xZinMPI3moup6ymz3gVn",
+    "isActive": true,
+    "balance": "$1,865.34",
+    "age": 23,
+    "name": "Walter Summers",
+    "gender": "male",
+    "company": "Ecole de la Vie",
+    "email": "waltersummers@roboid.com",
+    "phone": "+1 (983) 545-2775",
+    "address": "667 rue de l'ekip, 69 004 Lyon France",
+    "about": "Elit nostrud non dolor sit mollit velit sit est. Ullamco incididunt aute esse eiusmod magna cillum enim occaecat cillum. Anim ullamco reprehenderit minim in duis nisi ipsum et qui ipsum magna magna voluptate officia. Laborum dolor excepteur voluptate consequat aliqua commodo occaecat adipisicing enim. Est incididunt velit ea aliqua id commodo commodo. Non aliquip occaecat est aliquip laboris magna ullamco Lorem aliquip aute in voluptate.\r\n",
+    "registered": "2018-01-01T03:43:41 -01:00",
+    "latitude": 52.35,
+    "longitude": -136.704146,
+    "tags": [
+      "do",
+      "mollit",
+      "labore",
+      "dolor",
+      "nostrud",
+      "aliquip",
+      "occaecat"
+    ],
+    "friends": [
+      {
+        "id": 0,
+        "name": "Jessica Everett"
+      },
+      {
+        "id": 2,
+        "name": "Emily Miles"
+      }
+    ],
+    "data":"This is the First update hoho hoho "
+  }

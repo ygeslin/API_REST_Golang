@@ -38,7 +38,8 @@ import (
 //     return payload
 // }
 
-func extractJsonRequestBody (body io.ReadCloser) []models.User {
+// TODO refactor the function to be more flexible, to handle both type (user and []user) in the same function
+func extractJsonArrayRequestBody (body io.ReadCloser) []models.User {
 	// Read the raw data of the body
 	jsonData, err := ioutil.ReadAll(body)
 	if err != nil {
@@ -53,13 +54,42 @@ func extractJsonRequestBody (body io.ReadCloser) []models.User {
 	}
 	return DataSet
 }
+func extractJsonRequestBody (body io.ReadCloser) models.User {
+	// Read the raw data of the body
+	jsonData, err := ioutil.ReadAll(body)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+
+	// Deserialize the json Data
+	var DataSet models.User
+	err = json.Unmarshal(jsonData, &DataSet)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+	return DataSet
+}
+
+func createUserFile(fileName, data string) {
+		filepath := "./userFiles/" + fileName
+		f, err := os.Create(filepath)
+		if err != nil {
+			fmt.Println(err)
+		}
+		// close the file with defer
+		defer f.Close()
+		f.WriteString(data);
+		fmt.Println("Data file of the user was successfully created")
+
+}
 
 // * POST /add/users
 // TODO Add thread for each user creation
 //// check if the user exist in db before create DONE
+// TODO Add Real time arg if "registered" field is empty when creation user
 func CreateUser (c *gin.Context) {
 	fmt.Print("CreateUser Function\n")
-	DataSet := extractJsonRequestBody(c.Request.Body)
+	DataSet := extractJsonArrayRequestBody(c.Request.Body)
 
 	for _, item := range DataSet {
 		// query is the filter
@@ -80,15 +110,7 @@ func CreateUser (c *gin.Context) {
 		fmt.Println("The user with ID:'", item.ID, "' was successfully added")
 		}
 		 // create the file
-		 filepath := "./userFiles/" + item.ID
-		f, err := os.Create(filepath)
-		if err != nil {
-			fmt.Println(err)
-		}
-		// close the file with defer
-		defer f.Close()
-		f.WriteString(item.Data);
-		fmt.Println("Data file of the user was successfully created")
+		createUserFile(item.ID, item.Data);
 
 		// if User is already in the DB, just print info and don't add it
 		} else {
@@ -146,6 +168,8 @@ func GetUserList (c *gin.Context) {
 }
 
 // * UPDATE /user/:id
+// TODO optimize the update with UpdateOne instead of ReplaceOne
+// TODO implement more flexible input from the body (to be able to input only few fields in the json, whitout the User Struct)
 func UpdateAUser (c *gin.Context) {
 	fmt.Print("UpdateAUser Function\n")
 	userId := c.Param("id")
@@ -155,5 +179,17 @@ func UpdateAUser (c *gin.Context) {
 		c.JSON(http.StatusNoContent, "Sorry, user not found")
 		return
 	}
-	// res, err:= collection.UpdateOne(c, bson.M{"id": userId}, user)
+	requestBody := extractJsonRequestBody(c.Request.Body)
+	if requestBody.ID != user.ID {
+		fmt.Println("Error, user ID from URL and the request body are differents")
+		return
+	}
+	if user.Data != requestBody.Data {
+		createUserFile(userId, requestBody.Data)
+	}
+	res, err:= collection.ReplaceOne(c, bson.M{"id": userId}, requestBody)
+	if err != nil {
+    log.Fatal(err)
+	}
+	fmt.Print("Update: ", res)
 }
