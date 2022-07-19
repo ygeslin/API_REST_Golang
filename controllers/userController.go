@@ -122,7 +122,7 @@ func addUserRoutine (c *gin.Context, item models.User) {
 		// Decode user ID from bson
 		tmp.Decode(&user)
 		// Hash password and replace it in the user model
-		hashPassword, err := utils.HashPassword(user.Password)
+		hashPassword, err := utils.HashPassword(item.Password)
 		if err != nil {
 			return
 		}
@@ -176,10 +176,7 @@ func Login (c *gin.Context) {
 	}
 	if err := utils.VerifyPassword(user.Password, credentials.Password); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Invalid email or Password"})
-		fmt.Println("user", user.Password)
-		fmt.Println("credentials", credentials.Password)
-		fmt.Println("err", err)
-		// return
+		return
 	}
 }
 
