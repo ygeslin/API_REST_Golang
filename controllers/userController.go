@@ -215,7 +215,7 @@ func IsAuthorized(c *gin.Context) bool {
 			return false
 		}
 		token := strings.Split(c.Request.Header["Authorization"][0], " ")[1]
-		// fmt.Print(token)
+		fmt.Print(token)
 		res, error := utils.ValidateToken(token, configs.GetPublicKey())
 		if res == nil || error != nil {
 			return true

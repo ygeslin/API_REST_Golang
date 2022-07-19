@@ -34,16 +34,12 @@ echo -e "$blue $bold Login with Id1 : $Id1 $end"
 echo '--------------------------------------------------------------------'
 # echo ' curl -X POST http://localhost:8080/login'
 # curl -X POST --header "Content-Type: application/json" -d "{\"id\":\"$Id1\",\"password\": \"$Password1\"}" http://localhost:8080/login
-output=$( curl -X POST --header "Content-Type: application/json" -d "{\"id\":\"$Id1\",\"password\": \"$Password1\"}" http://localhost:8080/login | sed -e "s/{\"access_token\":\"//" | sed -e "s/\",\"status\":\"success\"\n}//")
+token1=$( curl -X POST --header "Content-Type: application/json" -d "{\"id\":\"$Id1\",\"password\": \"$Password1\"}" http://localhost:8080/login | sed -e "s/{\"access_token\":\"//" | sed -e "s/\",\"status\":\"success\"+$}//")
 echo '--------------------------------------------------------------------'
-echo $output
+echo $token1
 
-# echo ' curl -X POST http://localhost:8080/add/users' "\n"
-# curl -X POST http://localhost:8080/add/users
+sleep 10
 
-# echo ' curl -X POST http://localhost:8080/login'
-# curl -X POST http://localhost:8080/login
-# curl -X POST --header "Content-Type: application/json" -d '{"id":"1t5VsIBXpGl4s8C4CAXTsAlIZISYEOlicj14obz3CwFXCCvaRyuhDI10fah5IfdMS3VblW51my8xt6aQvJI3qNg5as0yqoTCvdZd","password":"CGUsfQkS06lo7LM2guSV"}' http://localhost:8080/login
 
 # echo ' curl -X DELETE http://localhost:8080/delete/user/:id'
 # curl -X DELETE http://localhost:8080/delete/user/1qS9OI4YX8daKvHpwvhrUt6PVnG6MLQMemeFirBdqzEjwibcE1y1EZJELvXWi6w7hU9GwHMQ0RgVc3uWEOEJBbwolVD7rqIUgcwN
@@ -51,7 +47,7 @@ echo $output
 # curl -X DELETE http://localhost:8080/delete/user/1t5VsIBXpGl4s8C4CAXTsAlIZISYEOlicj14obz3CwFXCCvaRyuhDI10fah5IfdMS3VblW51my8xt6aQvJI3qNg5as0yqoTCvdZd
 
 # echo ' curl -X GET http://localhost:8080/users/list'
-# curl -X GET http://localhost:8080/users/list
+ curl -H "Authorization: Bearer $token1" http://localhost:8080/users/list
 
 # echo ' curl -X GET http://localhost:8080/user/:id'
 # curl -X GET http://localhost:8080/user/1t5VsIBXpGl4s8C4CAXTsAlIZISYEOlicj14obz3CwFXCCvaRyuhDI10fah5IfdMS3VblW51my8xt6aQvJI3qNg5as0yqoTCvdZd
