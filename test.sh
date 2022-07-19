@@ -35,10 +35,8 @@ echo '--------------------------------------------------------------------'
 # echo ' curl -X POST http://localhost:8080/login'
 # curl -X POST --header "Content-Type: application/json" -d "{\"id\":\"$Id1\",\"password\": \"$Password1\"}" http://localhost:8080/login
 token1=$( curl -X POST --header "Content-Type: application/json" -d "{\"id\":\"$Id1\",\"password\": \"$Password1\"}" http://localhost:8080/login | sed -e "s/{\"access_token\":\"//" | sed -e "s/\",\"status\":\"success\"+$}//")
-echo '--------------------------------------------------------------------'
-echo $token1
-
-sleep 10
+# echo '--------------------------------------------------------------------'
+# echo $token1
 
 
 # echo ' curl -X DELETE http://localhost:8080/delete/user/:id'
@@ -48,6 +46,7 @@ sleep 10
 
 # echo ' curl -X GET http://localhost:8080/users/list'
  curl -H "Authorization: Bearer $token1" http://localhost:8080/users/list
+ curl -H "Authorization: Bearer $token1" http://localhost:8080/user/$Id1
 
 # echo ' curl -X GET http://localhost:8080/user/:id'
 # curl -X GET http://localhost:8080/user/1t5VsIBXpGl4s8C4CAXTsAlIZISYEOlicj14obz3CwFXCCvaRyuhDI10fah5IfdMS3VblW51my8xt6aQvJI3qNg5as0yqoTCvdZd
