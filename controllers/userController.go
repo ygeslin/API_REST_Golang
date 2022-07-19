@@ -152,7 +152,6 @@ func CreateUser (c *gin.Context) {
 // TODO automate test with curl
 // TODO add pepper to protect against rainbow table
 // TODO split login function into multiple functions
-// // Add jwt Auth
 func Login (c *gin.Context) {
 	fmt.Print("Login Function\n")
 	credentials := extractJsonLoginBody(c.Request.Body)
