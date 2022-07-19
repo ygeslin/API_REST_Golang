@@ -74,6 +74,21 @@ func extractJsonRequestBody (body io.ReadCloser) models.User {
 	return DataSet
 }
 
+func extractJsonLoginBody (body io.ReadCloser) models.SignInInput {
+	jsonData, err := ioutil.ReadAll(body)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+
+	// Deserialize the json Data
+	var DataSet models.SignInInput
+	err = json.Unmarshal(jsonData, &DataSet)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+	return DataSet
+}
+
 func createUserFile(fileName, data string) {
 		filepath := "./userFiles/" + fileName
 		// create or truncate the file
@@ -152,6 +167,20 @@ func CreateUser (c *gin.Context) {
 // TODO add pepper to protect against rainbow table
 func Login (c *gin.Context) {
 	fmt.Print("Login Function\n")
+	credentials := extractJsonLoginBody(c.Request.Body)
+	var user models.User
+	err := collection.FindOne(c, bson.M{"id": credentials.ID}).Decode(&user)
+	if err != nil {
+		c.JSON(http.StatusNoContent, gin.H{"message": "Sorry, user not found"})
+		return
+	}
+	if err := utils.VerifyPassword(user.Password, credentials.Password); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Invalid email or Password"})
+		fmt.Println("user", user.Password)
+		fmt.Println("credentials", credentials.Password)
+		fmt.Println("err", err)
+		// return
+	}
 }
 
 // * DELETE /delete/user/:id

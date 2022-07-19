@@ -9,6 +9,7 @@ curl -X POST http://localhost:8080/add/users
 
 echo ' curl -X POST http://localhost:8080/login'
 curl -X POST http://localhost:8080/login
+curl -X POST --header "Content-Type: application/json" -d '{"id":"1t5VsIBXpGl4s8C4CAXTsAlIZISYEOlicj14obz3CwFXCCvaRyuhDI10fah5IfdMS3VblW51my8xt6aQvJI3qNg5as0yqoTCvdZd","password":"CGUsfQkS06lo7LM2guSV"}' http://localhost:8080/login
 
 echo ' curl -X DELETE http://localhost:8080/delete/user/:id'
 curl -X DELETE http://localhost:8080/delete/user/1qS9OI4YX8daKvHpwvhrUt6PVnG6MLQMemeFirBdqzEjwibcE1y1EZJELvXWi6w7hU9GwHMQ0RgVc3uWEOEJBbwolVD7rqIUgcwN
