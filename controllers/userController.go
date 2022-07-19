@@ -96,15 +96,7 @@ func deleteUserFile(fileName string) {
 	}
 }
 
-// * POST /add/users
-// TODO Add thread for each user creation
-//// check if the user exist in db before create DONE
-// TODO Add Real time arg if "registered" field is empty when creation user
-func CreateUser (c *gin.Context) {
-	fmt.Print("CreateUser Function\n")
-	DataSet := extractJsonArrayRequestBody(c.Request.Body)
-
-	for _, item := range DataSet {
+func addUserRoutine (c *gin.Context, item models.User) {
 		// query is the filter
 		query := bson.M{"id": item.ID}
 		// try to find if the id of the user already exist in the DB
@@ -127,6 +119,19 @@ func CreateUser (c *gin.Context) {
 		} else {
 		fmt.Println("The user with ID:'", user.ID, "' is already register in the Database")
 		}
+	return
+}
+
+// * POST /add/users
+// TODO Add thread for each user creation
+//// check if the user exist in db before create DONE
+// TODO Add Real time arg if "registered" field is empty when creation user
+func CreateUser (c *gin.Context) {
+	fmt.Print("CreateUser Function\n")
+	DataSet := extractJsonArrayRequestBody(c.Request.Body)
+
+	for _, item := range DataSet {
+		go addUserRoutine(c, item)
 	}
 	// return with json
 }
