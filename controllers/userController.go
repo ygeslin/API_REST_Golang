@@ -22,7 +22,9 @@ import (
 	"log"
 )
 
+// TODO change response error code to fit with RFC
 // TODO Add middleware in all controllers or in the router ?
+// TODO restore user ID from jwt, to limit acces to only his profile
 
 	var collection = configs.GetCollection(configs.DB, "users")
 
@@ -157,24 +159,24 @@ func Login (c *gin.Context) {
 	var user models.User
 	err := collection.FindOne(c, bson.M{"id": credentials.ID}).Decode(&user)
 	if err != nil {
-		c.JSON(http.StatusNoContent, gin.H{"message": "Sorry, user not found"})
+		c.JSON(http.StatusOK, gin.H{"message": "Sorry, user not found"})
 		return
 	}
 	if err := utils.VerifyPassword(user.Password, credentials.Password); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Invalid email or Password"})
+		c.JSON(http.StatusOK, gin.H{"status": "fail", "message": "Invalid email or Password"})
 		return
 	}
 	privateKey := configs.GetPrivateKey();
 	// Generate Tokens
 	access_token, err := utils.CreateToken(time.Duration(3600000000000), user.ID, privateKey)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+		c.JSON(http.StatusOK, gin.H{"status": "fail", "message": err.Error()})
 		return
 	}
 
 	refresh_token, err := utils.CreateToken(time.Duration(3600000000000), user.ID, privateKey)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+		c.JSON(http.StatusOK, gin.H{"status": "fail", "message": err.Error()})
 		return
 	}
 
@@ -191,7 +193,7 @@ func DeleteUser (c *gin.Context) {
 	var user models.User
 	err := collection.FindOne(c, bson.M{"id": userId}).Decode(&user)
 	if err != nil {
-		c.JSON(http.StatusNoContent, "Sorry, user not found")
+		c.JSON(http.StatusOK, "Sorry, user not found")
 		return
 	}
 	res, err := collection.DeleteOne(c, bson.M{"id": userId})
@@ -203,22 +205,34 @@ func DeleteUser (c *gin.Context) {
 	deleteUserFile(userId)
 }
 
+func IsAuthorized(c *gin.Context) bool {
+		// get token from Authorization header
+		a:=  c.Request.Header["Authorization"]
+		if (len(a)) == 0 {
+			return false
+		}
+		token := strings.Split(c.Request.Header["Authorization"][0], " ")[1]
+		// fmt.Print(token)
+		res, error := utils.ValidateToken(token, configs.GetPublicKey())
+		if res == nil || error != nil {
+			return true
+		}
+		return false
+}
+
 // * GET /user/:id
 func GetAUser (c *gin.Context) {
 		fmt.Print("GetAUser Function\n")
-		// get token from Authorization header
-		token := strings.Split(c.Request.Header["Authorization"][0], " ")[1]
-		fmt.Print(token)
-		res, error := utils.ValidateToken(token, configs.GetPublicKey())
-		fmt.Print(res)
-		fmt.Print(error)
-
+		if IsAuthorized(c) == false{
+			c.JSON(http.StatusOK, gin.H{"message": "Sorry, you don't have a valid jwt token in Authorization Header, Login and retry"})
+			return
+		}
 
 		userId := c.Param("id")
 		var user models.User
 		err := collection.FindOne(c, bson.M{"id": userId}).Decode(&user)
 		if err != nil {
-			c.JSON(http.StatusNoContent, gin.H{"message": "Sorry, user not found"})
+			c.JSON(http.StatusOK, gin.H{"message": "Sorry, user not found"})
 			return
 		}
 		c.JSON(http.StatusOK, user)
@@ -230,7 +244,7 @@ func GetUserList (c *gin.Context) {
 		var userList []models.User
 		res, err := collection.Find(c, bson.M{})
 		if err != nil {
-			c.JSON(http.StatusNoContent, "Sorry, no user in DataBase")
+			c.JSON(http.StatusOK, "Sorry, no user in DataBase")
 			return
 		}
 		for res.Next(c) {
@@ -253,7 +267,7 @@ func UpdateAUser (c *gin.Context) {
 	var user models.User
 	err := collection.FindOne(c, bson.M{"id": userId}).Decode(&user)
 	if err != nil {
-		c.JSON(http.StatusNoContent, "Sorry, user not found")
+		c.JSON(http.StatusOK, "Sorry, user not found")
 		return
 	}
 	requestBody := extractJsonRequestBody(c.Request.Body)
