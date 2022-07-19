@@ -14,6 +14,7 @@ import (
 const (
 	// Timeout operations after N seconds
 	connectTimeout           = 5
+	// * deprecated var since I don't use atlas anymore
 	// connectionStringTemplate = "mongodb+srv://%s:%s@%s"
 	// connectionStringTemplate = "mongodb://%s:%s@%s"
 )
@@ -43,6 +44,7 @@ func ConnectDB() *mongo.Client {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+	// * I tested first my app using MongoDb Atlas
 	// Extract env variables from .env file
 	// username        := os.Getenv("MONGODB_USERNAME")
 	// password        := os.Getenv("MONGODB_PASSWORD")

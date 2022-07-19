@@ -24,8 +24,7 @@ import (
 
 // TODO change response error code to fit with RFC
 // TODO Add middleware in all controllers or in the router ?
-// TODO restore user ID from jwt, to limit acces to only his profile
-// TODO Add security for duplicate when signing in
+// TODO restore user ID from jwt, to limit access to only his profile
 
 	var collection = configs.GetCollection(configs.DB, "users")
 
@@ -148,12 +147,12 @@ func CreateUser (c *gin.Context) {
 	// return with json
 }
 // * POST /login
-// TODO Add jwt Auth
 // TODO limit the size and complexity of username and password (use regex)
 // TODO Add refresh token
 // TODO automate test with curl
 // TODO add pepper to protect against rainbow table
 // TODO split login function into multiple functions
+// // Add jwt Auth
 func Login (c *gin.Context) {
 	fmt.Print("Login Function\n")
 	credentials := extractJsonLoginBody(c.Request.Body)
