@@ -24,3 +24,8 @@ type User struct {
     Friends     []Friend      `json:"friends"`
     Data        string        `json:"data"`
 }
+
+type SignInInput struct {
+    ID          string        `json:"id"`
+    Password    string        `json:"password"`
+}

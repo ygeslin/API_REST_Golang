@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 #Inital post that fill the database with data set
 echo 'Inital post that fill the database with data set'

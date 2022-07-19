@@ -14,6 +14,7 @@ import (
 
 	"dep/API_REST_Golang/configs"
 	"dep/API_REST_Golang/models"
+	"dep/API_REST_Golang/utils"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -105,25 +106,33 @@ func addUserRoutine (c *gin.Context, item models.User) {
 		var user models.User
 		// Decode user ID from bson
 		tmp.Decode(&user)
+		// Hash password and replace it in the user model
+		hashPassword, err := utils.HashPassword(user.Password)
+		if err != nil {
+			return
+		}
+		item.Password = hashPassword
 		// If the user isn't in the DB, add it
 		if len(user.ID) == 0 {
 		res, err := collection.InsertOne(context.Background(), item)
 		if err != nil {
 			return
 		}
+		fmt.Printf("--------------------------------------------------\n")
 		fmt.Printf("InsertOne document with _id: %v \n", res.InsertedID)
 		 // create the file
 		createUserFile(item.ID, item.Data);
 
 		// if User is already in the DB, just print info and don't add it
 		} else {
+		fmt.Printf("--------------------------------------------------\n")
 		fmt.Println("The user with ID:'", user.ID, "' is already register in the Database")
 		}
 	return
 }
 
 // * POST /add/users
-// TODO Add thread for each user creation
+//// Add thread for each user creation
 //// check if the user exist in db before create DONE
 // TODO Add Real time arg if "registered" field is empty when creation user
 func CreateUser (c *gin.Context) {
@@ -159,6 +168,7 @@ func DeleteUser (c *gin.Context) {
 	if err != nil {
     log.Fatal(err)
 	}
+	fmt.Printf("--------------------------------------------------\n")
 	fmt.Printf("DeleteOne removed %v document(s)\n", res.DeletedCount)
 	deleteUserFile(userId)
 }
@@ -210,6 +220,7 @@ func UpdateAUser (c *gin.Context) {
 	}
 	requestBody := extractJsonRequestBody(c.Request.Body)
 	if requestBody.ID != user.ID {
+		fmt.Printf("--------------------------------------------------\n")
 		fmt.Println("Error, user ID from URL and the request body are differents")
 		return
 	}
@@ -220,5 +231,6 @@ func UpdateAUser (c *gin.Context) {
 	if err != nil {
     log.Fatal(err)
 	}
+		fmt.Printf("--------------------------------------------------\n")
 	fmt.Printf("Update %v document(s)\n", res.ModifiedCount)
 }
