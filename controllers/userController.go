@@ -25,6 +25,7 @@ import (
 // TODO change response error code to fit with RFC
 // TODO Add middleware in all controllers or in the router ?
 // TODO restore user ID from jwt, to limit acces to only his profile
+// TODO Add security for duplicate when signing in
 
 	var collection = configs.GetCollection(configs.DB, "users")
 
@@ -189,6 +190,10 @@ func Login (c *gin.Context) {
 // * DELETE /delete/user/:id
 func DeleteUser (c *gin.Context) {
 	fmt.Print("DeleteUser Function\n")
+		if IsAuthorized(c) == false{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": "You are not logged in"})
+			return
+		}
 	userId := c.Param("id")
 	var user models.User
 	err := collection.FindOne(c, bson.M{"id": userId}).Decode(&user)
@@ -224,7 +229,7 @@ func IsAuthorized(c *gin.Context) bool {
 func GetAUser (c *gin.Context) {
 		fmt.Print("GetAUser Function\n")
 		if IsAuthorized(c) == false{
-			c.JSON(http.StatusOK, gin.H{"message": "Sorry, you don't have a valid jwt token in Authorization Header, Login and retry"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": "You are not logged in"})
 			return
 		}
 
@@ -241,6 +246,10 @@ func GetAUser (c *gin.Context) {
 // * GET /users/list
 func GetUserList (c *gin.Context) {
 	fmt.Print("GetUserList Function\n")
+		if IsAuthorized(c) == false{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": "You are not logged in"})
+			return
+		}
 		var userList []models.User
 		res, err := collection.Find(c, bson.M{})
 		if err != nil {
@@ -263,6 +272,10 @@ func GetUserList (c *gin.Context) {
 // TODO implement more flexible input from the body (to be able to input only few fields in the json, whitout the User Struct)
 func UpdateAUser (c *gin.Context) {
 	fmt.Print("UpdateAUser Function\n")
+		if IsAuthorized(c) == false{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": "You are not logged in"})
+			return
+		}
 	userId := c.Param("id")
 	var user models.User
 	err := collection.FindOne(c, bson.M{"id": userId}).Decode(&user)
