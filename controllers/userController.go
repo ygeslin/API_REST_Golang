@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -23,23 +25,6 @@ import (
 // TODO Add middleware in all controllers or in the router ?
 
 	var collection = configs.GetCollection(configs.DB, "users")
-// func importDataSet() []models.User {
-//     content, err := ioutil.ReadFile("./data/DataSet.json")
-//     if err != nil {
-//         log.Fatal("Error when opening file: ", err)
-//     }
-
-//     // Now let's unmarshall the data into `payload`
-//     var payload []models.User
-//     err = json.Unmarshal(content, &payload)
-//     if err != nil {
-//         log.Fatal("Error during Unmarshal(): ", err)
-//     }
-
-//     // Let's print the unmarshalled data!
-//     // fmt.Println(payload);
-//     return payload
-// }
 
 // TODO refactor the function to be more flexible, to handle both type (user and []user) in the same function (Maybe with typeof and if)
 // TODO Add a validator for the data
@@ -165,6 +150,7 @@ func CreateUser (c *gin.Context) {
 // TODO Add refresh token
 // TODO automate test with curl
 // TODO add pepper to protect against rainbow table
+// TODO split login function into multiple functions
 func Login (c *gin.Context) {
 	fmt.Print("Login Function\n")
 	credentials := extractJsonLoginBody(c.Request.Body)
@@ -178,6 +164,24 @@ func Login (c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Invalid email or Password"})
 		return
 	}
+	privateKey := configs.GetPrivateKey();
+	// Generate Tokens
+	access_token, err := utils.CreateToken(time.Duration(3600000000000), user.ID, privateKey)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	refresh_token, err := utils.CreateToken(time.Duration(3600000000000), user.ID, privateKey)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	c.SetCookie("access_token", access_token, 36000000, "/", "localhost", false, true)
+	c.SetCookie("refresh_token", refresh_token, 36000000, "/", "localhost", false, true)
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "access_token": access_token})
 }
 
 // * DELETE /delete/user/:id
@@ -202,6 +206,14 @@ func DeleteUser (c *gin.Context) {
 // * GET /user/:id
 func GetAUser (c *gin.Context) {
 		fmt.Print("GetAUser Function\n")
+		// get token from Authorization header
+		token := strings.Split(c.Request.Header["Authorization"][0], " ")[1]
+		fmt.Print(token)
+		res, error := utils.ValidateToken(token, configs.GetPublicKey())
+		fmt.Print(res)
+		fmt.Print(error)
+
+
 		userId := c.Param("id")
 		var user models.User
 		err := collection.FindOne(c, bson.M{"id": userId}).Decode(&user)

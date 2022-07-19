@@ -2,20 +2,39 @@ package configs
 
 import (
 	"context"
-	"os"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/joho/godotenv"
 )
 const (
 	// Timeout operations after N seconds
 	connectTimeout           = 5
 	connectionStringTemplate = "mongodb+srv://%s:%s@%s"
 )
+
+func GetPrivateKey() ( priv string) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	// Extract env variables from .env file
+	priv       = os.Getenv("ACCESS_TOKEN_PRIVATE_KEY")
+	return priv
+}
+func GetPublicKey() ( pub string) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	// Extract env variables from .env file
+	pub        = os.Getenv("ACCESS_TOKEN_PUBLIC_KEY")
+	return pub
+}
 
 func ConnectDB() *mongo.Client {
 	// Safety to check if we can load the env credentials
