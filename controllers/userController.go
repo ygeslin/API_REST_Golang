@@ -206,6 +206,7 @@ func DeleteUser (c *gin.Context) {
 	fmt.Printf("--------------------------------------------------\n")
 	fmt.Printf("DeleteOne removed %v document(s)\n", res.DeletedCount)
 	deleteUserFile(userId)
+	c.JSON(http.StatusOK, "User and file successfully deleted.")
 }
 
 func IsAuthorized(c *gin.Context) bool {
@@ -294,6 +295,7 @@ func UpdateAUser (c *gin.Context) {
 	if err != nil {
     log.Fatal(err)
 	}
-		fmt.Printf("--------------------------------------------------\n")
+	fmt.Printf("--------------------------------------------------\n")
 	fmt.Printf("Update %v document(s)\n", res.ModifiedCount)
+		c.JSON(http.StatusOK, "User successfully updated, and file replaced if data has changed.")
 }

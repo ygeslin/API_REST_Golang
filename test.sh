@@ -6,12 +6,12 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 red="\033[31m"
 blue="\033[34m"
 end="\033[0m"
-bold="\033[1mBold"
+bold="\033[1m"
 else
 red="\e[31m"
 blue="\e[34m"
 end="\e[0m"
-bold="\e[1mBold"
+bold="\e[1m"
 fi
 
 # Variables
@@ -42,6 +42,8 @@ echo 'Refer to API log to see the results'
 echo ''
 echo ''
 
+sleep 5
+
 # ! Login
 echo -e "$red $bold TEST 2$end"
 echo '--------------------------------------------------------------------'
@@ -51,30 +53,36 @@ token1=$( curl -s -X POST -H "Content-Type: application/json" -d "{\"id\":\"$Id1
 token1=$(echo -n "$token1")
 echo "JwT for Id1 is $token1\tr"
 echo ''
+sleep 1
 token2=$( curl -s -X POST -H "Content-Type: application/json" -d "{\"id\":\"$Id2\",\"password\": \"$Password2\"}" http://localhost:8080/login | sed -e "s/{\"access_token\":\"//" | sed -e "s/\",\"status\":\"success\"}//")
 token2=$(echo -n "$token2")
 echo "JwT token for Id2 is $token2\tr"
 echo ''
+sleep 1
 token3=$( curl -s -X POST -H "Content-Type: application/json" -d "{\"id\":\"$Id3\",\"password\": \"$Password3\"}" http://localhost:8080/login | sed -e "s/{\"access_token\":\"//" | sed -e "s/\",\"status\":\"success\"}//")
 token3=$(echo -n "$token3")
 echo "JwT token for Id2 is $token3\tr"
 echo ''
+sleep 1
 
 # ! Get userList and get single User
 echo -e "$red $bold TEST 3$end"
 echo '--------------------------------------------------------------------'
 echo -e "$blue $bold Get userList and single user $end"
 echo '--------------------------------------------------------------------'
-echo 'result for userList'
+echo 'result for userList:'
 curl -H "Authorization: Bearer $token1\tr" http://localhost:8080/users/list
 echo ''
-echo 'result for Id1'
+sleep 1
+echo 'result for Id1:'
 curl -H "Authorization: Bearer $token1\tr" http://localhost:8080/user/$Id1
 echo ''
-echo 'result for Id2'
+sleep 1
+echo 'result for Id2:'
 curl -H "Authorization: Bearer $token2\tr" http://localhost:8080/user/$Id2
 echo ''
-echo 'result for Id3'
+sleep 1
+echo 'result for Id3:'
 curl -H "Authorization: Bearer $token3\tr" http://localhost:8080/user/$Id3
 echo ''
 
@@ -83,34 +91,39 @@ echo -e "$red $bold TEST 4$end"
 echo '--------------------------------------------------------------------'
 echo -e "$blue $bold Update user in Database and modify file if data has changed $end"
 echo '--------------------------------------------------------------------'
-echo 'result for update1'
+echo 'result for update1:'
 curl -X PATCH --header "Content-Type: application/json" \
 -H "Authorization: Bearer $token1\tr" \
 -d @data/DataSetUpdate1.json \
 http://localhost:8080/user/$Id1
-# echo ''
-# echo 'result for update2'
-# # echo ' curl -X PATCH http://localhost:8080/user/:id'
-# curl -X PATCH --header "Content-Type: application/json" \
-# -H "Authorization: Bearer $token2\tr"\
-# -d @data/DataSetUpdate2.json \
-# http://localhost:8080/user/$Id2
+echo ''
+sleep 1
+echo 'result for update2:'
+# echo ' curl -X PATCH http://localhost:8080/user/:id'
+curl -X PATCH --header "Content-Type: application/json" \
+-H "Authorization: Bearer $token2\tr" \
+-d @data/DataSetUpdate2.json \
+http://localhost:8080/user/$Id2
+sleep 1
+echo ''
 
 # # ! Delete in dataBase
-# echo -e "$red $bold TEST 5$end"
-# echo '--------------------------------------------------------------------'
-# echo -e "$blue $bold Update user in Database and modify file if data has changed $end"
-# echo '--------------------------------------------------------------------'
-# echo 'result for delete Id1'
-# curl -X DELETE \
-# -H "Authorization: Bearer $token1\tr" \
-# http://localhost:8080/delete/user/$Id1
-# echo ''
-# echo 'result for delete Id2'
-# # echo ' curl -X PATCH http://localhost:8080/user/:id'
-# curl -X DELETE \
-# -H "Authorization: Bearer $token2\tr" \
-# http://localhost:8080/delete/user/$Id2
-# echo '--------------------------------------------------------------------'
-# echo -e "$red $bold END OF THE TESTS $end"
-# echo '--------------------------------------------------------------------'
+echo -e "$red $bold TEST 5$end"
+echo '--------------------------------------------------------------------'
+echo -e "$blue $bold Update user in Database and modify file if data has changed $end"
+echo '--------------------------------------------------------------------'
+echo 'result for delete Id1'
+curl -X DELETE \
+-H "Authorization: Bearer $token1\tr" \
+http://localhost:8080/delete/user/$Id1
+echo ''
+sleep 1
+echo 'result for delete Id2'
+# echo ' curl -X PATCH http://localhost:8080/user/:id'
+curl -X DELETE \
+-H "Authorization: Bearer $token2\tr" \
+http://localhost:8080/delete/user/$Id2
+sleep 1
+echo '--------------------------------------------------------------------'
+echo -e "$red $bold END OF THE TESTS $end"
+echo '--------------------------------------------------------------------'
